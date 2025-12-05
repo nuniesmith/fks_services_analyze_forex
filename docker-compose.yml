@@ -1,0 +1,28 @@
+services:
+  fks_forex:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: fks_forex:latest
+    container_name: fks_forex
+    ports:
+      - "8006:8000"
+    environment:
+      - ENV=development
+      - LOG_LEVEL=INFO
+      - FKS_DATA_URL=http://fks_data:8000
+      - FKS_AI_URL=http://fks_ai:8000
+      - FKS_APP_URL=http://fks_app:8000
+      - REDIS_URL=redis://redis:6379
+    networks:
+      - fks-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+networks:
+  fks-network:
+    external: true
